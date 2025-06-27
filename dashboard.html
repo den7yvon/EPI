@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EPI Investments Dashboard</title>
+  <link rel="shortcut icon" type="image/x-icon" href="FAVICON LOGO.jpg">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    body {margin: 0; font-family: 'Segoe UI', sans-serif;
+     background: linear-gradient(135deg, #2023ca, #f804cf);
+    }
+
+    #loader {position: fixed; top: 0; left: 0;  width: 100%; height: 100%;
+      background-color: rgba(255, 255, 255, 0.9);  display: flex;
+      align-items: center; justify-content: center; z-index: 9999;}
+
+    .spinner {width: 50px; height: 50px; border: 6px solid #ddd; border-top: 6px solid #003366;
+      border-radius: 50%; animation: spin 1s linear infinite;}
+
+    @keyframes spin {0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); }}    
+
+    .top-nav {background-color: #003366;  color: white; display: flex; justify-content: space-between;
+      align-items: center; padding: 10px 30px; position: sticky; top: 0; z-index: 1000;}
+
+    .nav-left a {color: white; text-decoration: none; margin-right: 20px; font-weight: 500;}
+
+    .nav-left a:hover {text-decoration: underline;}
+
+    .nav-right {display: flex; align-items: center;}
+
+    .user-info {display: flex; align-items: center; gap: 20px;}
+
+    .user-details p {margin: 0; font-size: 13px; text-align: right;}
+
+    .user-profile {text-align: center;}
+
+    .user-icon {font-size: 30px; color: white; margin-top: 5px;}
+
+    .user-profile p {margin: 0; font-size: 14px; font-weight: bold;}
+
+    .user-profile button {margin-top: 5px; padding: 5px 10px; background: #ff4d4d; color: white;
+      border: none; border-radius: 5px; cursor: pointer;}
+
+    .user-profile button:hover {background: #e60000;}
+
+    main {padding: 20px; min-height: 70vh;}
+
+    footer {background: #003366; color: white; text-align: center; padding: 10px;}
+
+    .dashboard-section {padding: 20px; margin-top: 20px;}
+
+    #welcome-message {font-size: 1.8em; margin-bottom: 15px; color: #2c3e50;}
+
+    .info-message {font-size: 1.2em; color: #e6e3e3; text-align: center; margin: 30px 0;}
+
+    .investment-cards {display: flex; flex-wrap: wrap; gap: 20px; justify-content: flex-start;}
+
+    .investment-box {background: linear-gradient(135deg, white, lime); border-radius: 8px;
+        border: 1px solid #ddd; padding: 15px; box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        width: 100%; max-width: 300px;}
+
+    .investment-box h4 {margin-top: 0; color: #3994f0;}
+
+    .investment-detail {margin-bottom: 8px; font-size: 0.95em; color: #555;}
+
+    .investment-inline {display: flex; justify-content: space-between;}
+
+    .section-heading {margin-top: 40px; text-align: center; font-size: 1.5em; color: Black;
+        border-radius: 10px; background: linear-gradient(135deg, rgb(10, 248, 248), lime);}
+
+    .plans-container {display: flex; flex-wrap: wrap; gap: 20px; justify-content: space-around; padding: 20px 10px;}
+
+    .plan-column {flex: 1; min-width: 280px; max-width: 350px; background: linear-gradient(135deg, white, lime);
+        border-radius: 10px; padding: 15px; box-shadow: 0 0 10px rgba(0,0,0,0.05);}
+
+    .plan-column h3 {text-align: center; margin-bottom: 15px; color: #2882dd;}
+
+    .plan-card {background: white; border-radius: 8px; padding: 15px; margin-bottom: 15px;
+        box-shadow: 0 0 8px rgba(0,0,0,0.07);}
+
+    .plan-card p {margin: 6px 0; font-size: 0.95em;}
+
+    .plan-card button {margin-top: 10px; width: 100%; padding: 10px; background: #0077cc; color: white;
+        border: none; border-radius: 5px; cursor: pointer;}
+
+    .plan-card button:hover {background: #005fa3;}
+
+    .confirmation-box, .user-details-box {display: flex; flex-direction: column; gap: 12px; padding: 15px;
+        background-color: #fff; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+        margin-top: 10px; font-size: 16px;}
+
+    .confirmation-box div, .user-details-box div {display: flex; justify-content: space-between; font-weight: 500;}
+
+    .proceed-btn {padding: 10px 25px; background-color: #007bff; color: white; font-weight: bold; border: none;
+        border-radius: 6px; cursor: pointer; transition: 0.3s ease;}
+
+    .proceed-btn:hover {background-color: #0056b3;}
+
+    #payment-section {padding: 20px; background: #f9f9f9; border-radius: 8px; margin-top: 30px;}
+
+    #payment-section button {background: #005e1c; color: white; padding: 10px 20px; border: none;
+        margin-top: 10px; cursor: pointer; border-radius: 10px;}
+
+    #payment-section input {padding: 8px; width: 90%; margin-top: 10px;}
+
+    .withdraw-btn {border-radius: 10px; background-color: rgb(72, 209, 233); font-weight: bold; cursor: pointer;}
+
+    .label {border-radius: 10px;max-width: 200px; height:20px; color: blue; font-weight: bold;}
+
+    .submit-withdrawal{background-color: green; height:30px; max-width: 300px; border-radius: 10px; color: white;
+        font-weight: bold; border: green; cursor: pointer; align-items: center;}
+  </style>
+</head>
+<body>
+  <!-- Loader -->
+  <div id="loader"><div class="spinner"></div> </div>
+
+  <!-- Top Navigation -->
+  <header class="top-nav">
+    <div class="nav-left">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="projects.html">Projects</a>
+      <a href="chat.html">Chat Us</a>
+      <a href="announcements.html">Announcements</a>
+      <a href="account.html">My Account</a>
+    </div>
+    <div class="nav-right">
+      <div class="user-info">
+        <div class="user-details">
+          <p id="username">Loading...</p>
+          <p id="userid">---</p>
+          <p id="phone">---</p>
+        </div>
+        <div class="user-profile">
+          <p id="hello-user">Hello, ...</p>
+          <i class="fas fa-user-circle user-icon"></i>
+          <button onclick="confirmLogout()">Log Out</button>
+        </div>
+      </div>
+    </div>
+  </header>
+  
+  <!-- Page Content -->
+  <main>
+    <div id="dashboard-content">
+    <h2 style="text-align: center; color: rgb(255, 255, 255);">Welcome to your Dashboard</h2>
+    <p style="text-align: center; color: rgb(243, 242, 242);">All your personal 
+        investment information will appear here.</p>
+    <div id="dashboard-content" class="dashboard-section">          
+        <div id="investments-area">
+            <h3 style="color: white;" >Track Your Investments Seamlessly👇</h3>
+          <!-- Message or investment cards will go here -->
+          <p id="no-investments-message" class="info-message">Start investing today.</p>
+          <div id="investment-cards-container" class="investment-cards"></div>
+        </div>      
+        <h2 class="section-heading">SELECT YOUR INVESTMENT PLANS BELOW<br>
+            <i style="font-size: 20px;">And make your life a fortune!</i></h2>
+        <div class="plans-container">
+          <div class="plan-column" id="small-packages">
+            <h3>Small Packages</h3>
+          </div>
+          <div class="plan-column" id="middle-packages">
+            <h3>Middle Packages</h3>
+          </div>
+          <div class="plan-column" id="highend-packages">
+            <h3>High End Packages</h3>
+          </div>
+        </div>
+    </div>
+    </div>
+
+    <div id="timer-${investment.id}" style="display: none;"></div>
+
+    <!-- Confirmation Section -->
+    <div id="confirmation-section" style="display: none; padding: 20px; border: 1px solid #ccc;
+        margin-top: 30px; border-radius: 10px; background: #fafafa;">
+        <h2 style="text-align:center; color: green;">Kindly Confirm Your Investment Package</h2>  
+        <div class="confirmation-box">
+            <div><strong>Principal:</strong> <span id="confirm-principal"></span></div>
+            <div><strong>Daily Interest Rate:</strong> <span id="confirm-rate"></span></div>
+            <div><strong>Daily Earning:</strong> <span id="confirm-daily"></span></div>
+        </div>  
+        <h3 style="margin-top: 30px; color: navy;">Kindly Confirm Your Details</h3>
+        <div class="user-details-box">
+            <div><strong>Full Name:</strong> <span id="user-names"></span></div>
+            <div><strong>Username:</strong> <span id="user-username"></span></div>
+            <div><strong>Phone Number:</strong> <span id="user-phone"></span></div>
+        </div>  
+        <div style="margin-top: 25px; text-align: center;">
+        <button id="proceed-to-payment" class="proceed-btn" onclick="showPaymentView(selectedPlanData)">
+            Proceed to Make Payment</button>
+        </div>
+    </div>
+
+    <!-- Payment Confirmation View -->
+    <section id="payment-section" style="display:none;">
+        <h2>To proceed with payment, click the button below.</h2>
+        <p>Payment channels will be displayed to you. Kindly note that these payment 
+            channel are discreet for every user due to security purposes. All paymenrs are received 
+            and managed by Madam Elizabeth Kyalo - Financial Manager.</p>
+        <button onclick="revealPaymentChannel()">Show Payment Channel</button>  
+        <div id="payment-channel" style="display:none; margin-top: 20px;">
+            <p><strong>Amount:</strong> Ksh <span id="payment-amount">0</span></p>
+            <p><strong><u><h3>Chose your Payment Channel Below:</h3></u></strong></p>
+            <p><strong>1. Pay to Till Number:</strong> 
+                <span style="color: green; font-weight: bold;"><a style="color: green;">
+                    3348872</a></span></p>            
+            <p><strong>2. STK Push</strong>
+                <span style="color: green; font-weight: bold;"><a style="color: green;">
+                    <i>Coming soon</i></a></span></p>        
+        <button onclick="showTransactionField()">I Have Paid</button>
+        </div>  
+        <div id="transaction-input" style="display:none; margin-top: 20px;">
+            <label for="transaction-id"><strong>Enter Safaricom Transaction ID:</strong></label><br>
+            <input class="label" type="text" id="transaction-id" placeholder="e.g. QJA2W8XXX..." /><br><br>
+            <button onclick="completeInvestment()">Complete Investment</button>
+        </div>  
+        <div id="payment-loader" style="display:none; margin-top: 20px;">
+            <p>Please wait...</p>
+            <div class="spinner"></div>
+        </div>
+    </section>
+
+    <!-- Withdrawal View -->
+    <section id="withdrawal-section" style="display:none;">
+        <div class="confirmation-box">
+        <h2 style="text-align:center; color: green;">Withdraw Earnings</h2>
+        <div id="withdrawal-details" class="user-details-box">
+            <div><strong>Full Name:</strong> <span id="withdrawal-name"></span></div>
+            <div><strong>Username:</strong> <span id="withdrawal-username"></span></div>
+            <div><strong>Phone:</strong> <span id="withdrawal-phone"></span></div>
+        </div>
+        <div class="user-details-box">
+            <label>Enter Amount to Withdraw:</label><br>
+            <input class="label" type="number" id="withdrawal-amount" placeholder="Ksh amount" min="1" />
+            <p class="note">
+                Kindly note that the withdrawn amount will be sent to your registered phone number.
+                If you’ve changed it, please update it under your Account before submitting.
+            </p>
+            <button id="submit-withdrawal" class="submit-withdrawal" onclick="submitWithdrawal()">Submit Withdrawal Request</button>
+        </div>
+        </div>
+    </section>  
+</main>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; EPI Company Limited 2025 &nbsp&nbsp&nbsp&nbsp&nbsp📞 Call Us: 0117 803 190 
+        &nbsp&nbsp&nbsp&nbsp&nbsp 💬 WhatsApp Us: +254117 803 190 &nbsp&nbsp&nbsp&nbsp&nbsp
+        📧Email us: epiinvestments.co.ke@gmail.com </p>
+  </footer>
+
+<!-- Supabase + Script -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+    const supabaseUrl = 'https://drivactdliyzcshlousw.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRyaXZhY3RkbGl5emNzaGxvdXN3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1NTY4ODUsImV4cCI6MjA2MjEzMjg4NX0.7NYTI6cZIjsQoxCwBjj4ELbSEvEQqrR66fNB3PNNVDo';
+    const client = supabase.createClient(supabaseUrl, supabaseKey); // ✅ Changed
+
+    const userId = localStorage.getItem("epi_user_id");
+
+    window.investmentTimers = {};
+    Object.values(window.investmentTimers).forEach(clearInterval);
+    window.investmentTimers = {}; // Reset all
+
+    if (!userId) {
+        alert("You're not logged in.");
+        window.location.href = "login.html";
+    }
+
+    async function fetchUserDetails() {
+        try {
+        const { data, error } = await client
+            .from("users")
+            .select("username, phone_number, first_name")
+            .eq("id", userId)
+            .single();
+        if (error || !data) throw new Error("Failed to fetch user");
+        document.getElementById("username").textContent = data.username;
+        document.getElementById("userid").textContent = userId;
+        document.getElementById("phone").textContent = data.phone_number;
+        document.getElementById("hello-user").textContent = `Hello, ${data.first_name || data.username}`;
+
+        } catch (err) {
+            alert("Session error. Please log in again.");
+            localStorage.clear();
+            window.location.href = "login.html";
+        } finally {
+            document.getElementById("loader").style.display = "none";
+        }
+    }
+
+    function confirmLogout() {
+        const confirmOut = confirm("Are you sure you want to log out?");
+        if (confirmOut) {
+            localStorage.clear();
+            window.location.href = "login.html";
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", fetchUserDetails);
+
+    async function loadUserInvestments() {
+        const userId = localStorage.getItem("epi_user_id");
+        const container = document.getElementById("investment-cards-container");
+        const message = document.getElementById("no-investments-message");
+
+        try {
+            const { data: investments, error } = await client
+                .from("investments")
+                .select("*")
+                .eq("user_id", userId)
+                .order("created_at", { ascending: true });
+
+        if (error) throw error;
+
+        container.innerHTML = "";
+        window.activeTimers = {}; // ✅ Reset timer tracker on full reload
+
+        if (!investments.length) {
+            message.style.display = "block";
+            return;
+        }
+
+        message.style.display = "none";
+
+        investments.forEach(investment => {
+            const card = document.createElement("div");
+            card.className = "investment-box";
+            card.innerHTML = `
+                <h4><u>Investment ${investments.indexOf(investment) + 1}</u></h4>
+                <div><strong>Principal:</strong> <b style="color: blue"> Ksh ${investment.principal}</b></div>
+                <div><strong>Rate:</strong><b style="color: blue"> ${investment.compounding_rate}% </b> &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp 
+                    <strong>Daily:</strong> <b style="color: blue"> Ksh ${investment.daily_earning}</b></div>
+                <div><strong>Earnings Balance:</strong> <b style="color: red"> Ksh ${investment.earnings_balance}</b></div>
+                <div><strong>Total Earnings:</strong> <b style="color: maroon">  Ksh ${investment.total_earnings}</b></div>                
+                <div><strong>Approval Status:</strong> 
+                <span id="status-${investment.id}" style="color:${investment.investment_status === 'approved' ? 'blue' : 'red'}">
+                    ${investment.investment_status ? investment.investment_status : 'Pending'}
+                </span>
+                </div>
+                <div id="timer-${investment.id}" style="display: none; color: red; font-weight: bold; margin-top: 5px;"></div>
+                <button class="withdraw-btn">Withdraw</button>
+            `;
+
+            container.appendChild(card);
+
+            // Attach withdraw button
+            const withdrawBtn = card.querySelector(".withdraw-btn");
+            withdrawBtn.addEventListener("click", () => showWithdrawalForm(investment));
+
+            console.log("✔️ Checking investment:", investment.id);
+            console.log("Status:", investment.investment_status);
+            console.log("Approval:", investment.approval_time);
+
+            // ✅ Timer setup — but only once per investment
+            if (
+                investment.investment_status === 'approved' &&
+                investment.approval_time &&
+                investment.last_earning_update
+            ) {
+                if (!window.activeTimers[investment.id]) {
+                    const timerElement = document.getElementById(`timer-${investment.id}`);
+                    if (timerElement) {
+                        timerElement.style.display = "block";
+                        window.activeTimers[investment.id] = true; // ✅ Mark as running
+                        startEarningsCountdown(investment, timerElement);
+                    }
+                }
+            }
+        });
+
+        } catch (err) {
+            console.error(err);
+            message.textContent = "Failed to load investments.";
+            message.style.color = "red";
+        }
+    }
+
+    function startEarningsCountdown(investment, timerEl) {
+        if (!investment.last_earning_update) {
+            console.warn(`⏹ Skipping timer for ${investment.id} — last_earning_update missing.`);
+            if (timerEl) timerEl.style.display = "none";
+            return;
+        }
+
+        const cycleMs = 24 * 60 * 60 * 1000;
+
+        const updateTimer = async () => {
+            // Prevent re-entry
+            if (timerEl.dataset.updating === "true") return;
+            timerEl.dataset.updating = "true";
+
+            const now = Date.now();
+            let lastUpdateTs = new Date(investment.last_earning_update).getTime();
+            const elapsed = now - lastUpdateTs;
+            const cycles = Math.floor(elapsed / cycleMs);
+
+            if (cycles >= 1) {
+                console.log(`⏫ ${cycles} full earning cycle(s) passed for ${investment.id}`);
+
+            // Get latest data from Supabase
+            const { data: latest, error: fetchError } = await client
+                .from("investments")
+                .select("earnings_balance, total_earnings, last_earning_update")
+                .eq("id", investment.id)
+                .single();
+
+            if (fetchError || !latest) {
+                console.error("❌ Failed to fetch latest investment:", fetchError);
+                timerEl.dataset.updating = "false";
+                return;
+            }
+
+            const addedEarnings = investment.daily_earning * cycles;
+            const newLastUpdate = new Date(lastUpdateTs + cycles * cycleMs).toISOString();
+
+            const { error: updateError } = await client
+                .from("investments")
+                .update({
+                    earnings_balance: latest.earnings_balance + addedEarnings,
+                    total_earnings: latest.total_earnings + addedEarnings,
+                    last_earning_update: newLastUpdate
+                })
+                .eq("id", investment.id);
+
+            if (updateError) {
+                console.error("❌ Update failed:", updateError);
+                timerEl.dataset.updating = "false";
+                return;
+            }
+
+            // Update DOM earnings
+            const box = timerEl.closest(".investment-box");
+            if (box) {
+                const earningsEl = box.querySelector("div:nth-child(4) b");
+                const totalEl = box.querySelector("div:nth-child(5) b");
+
+                if (earningsEl) earningsEl.textContent = `Ksh ${latest.earnings_balance + addedEarnings}`;
+                if (totalEl) totalEl.textContent = `Ksh ${latest.total_earnings + addedEarnings}`;
+            }
+
+            // Update in-memory timestamp
+            investment.last_earning_update = newLastUpdate;
+            lastUpdateTs = new Date(newLastUpdate).getTime();
+        }
+
+        // Refresh countdown based on updated timestamp
+        const remaining = cycleMs - (Date.now() - lastUpdateTs);
+        const h = Math.floor(remaining / (1000 * 60 * 60));
+        const m = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+        const s = Math.floor((remaining % (1000 * 60)) / 1000);
+        timerEl.textContent = `⏱ Time to next earning: ${h}h ${m}m ${s}s`;
+        timerEl.dataset.updating = "false";
+        };
+
+        // Prevent multiple intervals per investment
+        if (window.investmentTimers[investment.id]) {
+            clearInterval(window.investmentTimers[investment.id]);
+        }
+
+        updateTimer(); // Run immediately
+
+        const intervalId = setInterval(updateTimer, 1000);
+        window.investmentTimers[investment.id] = intervalId;
+
+        if (timerEl) timerEl.style.display = "block";
+    }
+
+    // 📦 Load when content is ready
+    document.addEventListener("DOMContentLoaded", loadUserInvestments);
+
+    window.addEventListener("beforeunload", () => {
+    Object.values(window.investmentTimers).forEach(clearInterval);
+    });
+
+    async function loadInvestmentPlans() {
+        try {
+            const { data, error } = await client
+            .from("investment_plans")
+            .select("*");
+
+        if (error) throw error;
+
+        // Clear current
+        document.getElementById("small-packages").innerHTML = "<h3>Small Packages</h3>";
+        document.getElementById("middle-packages").innerHTML = "<h3>Middle Packages</h3>";
+        document.getElementById("highend-packages").innerHTML = "<h3>High End Packages</h3>";
+
+        data.forEach(plan => {
+        const card = document.createElement("div");
+        card.className = "plan-card";
+        card.innerHTML = `
+            <p><strong>Principal:</strong> <b style="color:blue"> Ksh.${plan.principal}</b></p>
+            <p><strong>Daily Interest Rate:</strong> <b style="color:lime">${plan.compounding_rate}% </b></p>
+            <p><strong>Daily Earning:</strong> <b style="color:rgb(250, 60, 13)"> Ksh. ${plan.daily_earning}</b></p>
+            <button onclick="goToPayment('${plan.id}')">Invest</button>
+        `;
+
+        // Categorize
+        if (plan.category === "Small") {
+            document.getElementById("small-packages").appendChild(card);
+        } else if (plan.category === "Middle") {
+            document.getElementById("middle-packages").appendChild(card);
+        } else if (plan.category === "High End") {
+            document.getElementById("highend-packages").appendChild(card);
+        }
+        });
+        } catch (err) {
+            console.error("Error loading plans:", err);
+            alert("Failed to load investment plans. Try again later.");
+        }
+    }
+
+    async function goToPayment(planId) {
+        try {
+            // Hide all other sections except header/footer
+            document.getElementById("dashboard-content").style.display = "none";
+
+            // Fetch plan details from Supabase
+            const { data: plan, error } = await client
+                .from("investment_plans")
+                .select("*")
+                .eq("id", planId)
+                .single();
+
+        if (error || !plan) throw new Error("Failed to load plan");
+
+        // Populate confirmation view
+        document.getElementById("confirm-principal").textContent = `Ksh. ${plan.principal}`;
+        document.getElementById("confirm-rate").textContent = `${plan.compounding_rate}%`;
+        document.getElementById("confirm-daily").textContent = `Ksh. ${plan.daily_earning}`;
+
+        // Fetch current user info
+        const userId = localStorage.getItem("epi_user_id");
+        const { data: user, error: userError } = await client
+            .from("users")
+            .select("first_name, middle_name, last_name, username, phone_number")
+            .eq("id", userId)
+            .single();
+
+        if (userError || !user) throw new Error("Failed to load user");
+        window.selectedPlanData = plan; // Store globally for later use in payment
+
+        const fullName = `${user.first_name || ''} ${user.middle_name || ''} ${user.last_name || ''}`;
+        document.getElementById("user-names").textContent = fullName.trim();
+        document.getElementById("user-username").textContent = user.username;
+        document.getElementById("user-phone").textContent = user.phone_number;
+
+        // Show confirmation section
+        document.getElementById("confirmation-section").style.display = "block";
+
+        } catch (err) {
+            alert("Something went wrong. Please try again.");
+            console.error("Payment load error:", err);
+        }
+    }
+
+    window.selectedPlanData = null;
+
+    function showPaymentView(planData) {
+        // Store selected plan globally
+        selectedPlanData = planData;
+
+        // Update the payment amount display
+        document.getElementById("payment-amount").textContent = planData.principal;
+
+        // Hide other sections
+        document.getElementById("dashboard-content").style.display = "none";  // Hide dashboard
+        document.getElementById("confirmation-section").style.display = "none"; // Hide confirmation view
+
+        // Show payment section
+        document.getElementById("payment-section").style.display = "block";
+        if (!window.selectedPlanData) {
+            return alert("Missing investment plan. Please restart the process.");
+        }
+    }
+
+
+    function revealPaymentChannel() {
+        document.getElementById("payment-channel").style.display = "block";
+    }
+
+    function showTransactionField() {
+        document.getElementById("transaction-input").style.display = "block";
+    }
+
+    async function completeInvestment() {
+        const userId = localStorage.getItem("epi_user_id");
+        const trxId = document.getElementById("transaction-id").value.trim();
+
+        if (!trxId) return alert("Please enter a transaction ID");
+        if (!window.selectedPlanData) return alert("Missing investment plan. Please restart the process.");
+
+        const loader = document.getElementById("loader");
+            loader.style.position = "fixed";
+            loader.style.top = "0";
+            loader.style.left = "0";
+            loader.style.width = "100vw";
+            loader.style.height = "100vh";
+            loader.style.background = "rgba(0, 0, 0, 0.5)";
+            loader.style.display = "flex";
+            loader.style.justifyContent = "center";
+            loader.style.alignItems = "center";
+            loader.style.zIndex = "9999";
+
+        try {
+            const { error } = await client.from("investments").insert({
+                user_id: userId,
+                principal: window.selectedPlanData.principal,
+                compounding_rate: window.selectedPlanData.compounding_rate,
+                daily_earning: window.selectedPlanData.daily_earning,
+                earnings_balance: 0,
+                total_earnings: 0,
+                investment_status: "pending",
+                transaction_id: trxId,
+        });
+
+        if (error) throw error;
+
+        alert("Investment recorded. Await admin approval.");
+        window.location.href = "dashboard.html";
+
+        } catch (error) {
+            console.error("Insert failed:", error);
+            alert("Failed to record investment. Try again.");
+        } finally {
+            document.getElementById("loader").style.display = "none";
+        }
+    }
+
+    async function showWithdrawalForm(investment) {
+        // Hide dashboard and confirmation sections
+        document.getElementById("dashboard-content").style.display = "none";
+        document.getElementById("confirmation-section").style.display = "none";
+        document.getElementById("payment-section").style.display = "none";
+
+        // Show withdrawal section
+        document.getElementById("withdrawal-section").style.display = "block";
+
+        const userId = localStorage.getItem("epi_user_id");
+        if (!userId) return alert("User session missing");
+
+        try {
+            const { data: user, error } = await client
+                .from("users")
+                .select("first_name, middle_name, last_name, username, phone_number")
+                .eq("id", userId)
+                .single();
+
+        if (error || !user) throw error;
+
+        // Populate user details
+        document.getElementById("withdrawal-name").textContent = 
+        `${user.first_name} ${user.middle_name || ''} ${user.last_name}`;
+        document.getElementById("withdrawal-username").textContent = user.username;
+        document.getElementById("withdrawal-phone").textContent = user.phone_number;
+
+        // Store current investment for submit step
+        window.currentWithdrawalContext = investment;
+
+        } catch (err) {
+            console.error("Error fetching user details:", err);
+            alert("Error loading your profile. Try again later.");
+        }
+    }
+
+    async function submitWithdrawal() {
+        const investment = window.currentWithdrawalContext;
+        const userId = localStorage.getItem("epi_user_id");
+        const name = document.getElementById("withdrawal-name").textContent;
+        const username = document.getElementById("withdrawal-username").textContent;
+        const phone = document.getElementById("withdrawal-phone").textContent;
+        const amount = parseFloat(document.getElementById("withdrawal-amount").value);
+
+        if (!investment || isNaN(amount) || amount <= 0) {
+            return alert("Please enter a valid amount.");
+        }
+        if (amount > investment.earnings_balance) {
+            return alert("Amount cannot exceed your earnings balance.");
+        }
+        // Show loader
+        const loader = document.getElementById("loader");
+            loader.style.position = "fixed";
+            loader.style.top = "0";
+            loader.style.left = "0";
+            loader.style.width = "100vw";
+            loader.style.height = "100vh";
+            loader.style.background = "rgba(0, 0, 0, 0.5)";
+            loader.style.display = "flex";
+            loader.style.justifyContent = "center";
+            loader.style.alignItems = "center";
+            loader.style.zIndex = "9999";
+
+        try {
+            const { error } = await client.from("withdraws").insert([{
+                user_id: userId,
+                username,
+                full_name: name,
+                phone,
+                amount,
+                investment_id: investment.id,
+                status: "pending"
+        }]);
+        if (error) throw error;
+            alert("Withdrawal request submitted successfully. Await admin approval.");
+            document.getElementById("withdrawal-section").style.display = "none";
+            document.getElementById("dashboard-content").style.display = "block";
+
+        } catch (err) {
+            console.error("Withdrawal submission error:", err);
+            alert("An error occurred. Please try again later.");
+        }
+        // Hide loader after alert and UI update
+        document.getElementById("loader").style.display = "none";
+    }
+
+    async function checkWithdrawalsAndUpdateInvestments() {
+        const userId = localStorage.getItem("epi_user_id");
+
+        const { data: withdrawals, error } = await client
+            .from("withdraws")
+            .select("*")
+            .eq("user_id", userId)
+            .eq("status", "approved")
+            .eq("deducted", false); // ✅ Only process not-yet-deducted ones
+
+        if (error || !withdrawals) return;
+
+        for (let w of withdrawals) {
+            const { data: investment } = await client
+                .from("investments")
+                .select("*")
+                .eq("id", w.investment_id)
+                .single();
+
+        if (investment && investment.earnings_balance >= w.amount) {
+            // ✅ Deduct with a guard to prevent negative balances
+            const { error: updateError } = await client
+                .from("investments")
+                .update({
+                    earnings_balance: investment.earnings_balance - w.amount
+                })
+                .eq("id", w.investment_id)
+                .gte("earnings_balance", w.amount); // ✅ Lock: only if enough balance
+
+        if (!updateError) {
+            // ✅ Mark this withdrawal as processed
+            await client
+                .from("withdraws")
+                .update({
+                    status: "completed",
+                    deducted: true
+                })
+                .eq("id", w.id);
+            }
+        }
+        }
+
+        loadUserInvestments();
+    }
+
+    // Optional polling every 60s
+    setInterval(checkWithdrawalsAndUpdateInvestments, 60000);
+
+    document.addEventListener("DOMContentLoaded", loadInvestmentPlans);
+</script>
+</body>
+</html>

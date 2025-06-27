@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EPI INVESTMENTS - Login / Sign Up</title>
+  <link rel="shortcut icon" type="image/x-icon" href="FAVICON LOGO.jpg">
+  <style>
+    body {margin: 0; padding: 0;font-family: 'Segoe UI', sans-serif;
+        background: linear-gradient(to bottom right, #882bf3, #f328c0);
+        min-height: 100vh; display: flex; justify-content: center;
+        align-items: center;}
+
+    .form-container {width: 100%;max-width: 400px;padding: 20px;
+        background: white;border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);}
+  
+    input { display: block; width: 97%;font-size: 1rem; padding: 8px; margin-top: 10px; 
+        border-top-color: #882bf3; border-bottom-color: #f328c0;
+        border-left-color: #882bf3;border-right-color:#f328c0 ;}
+
+    button { display: block; width: 100%; font-size: 1rem; padding: 8px; margin-top: 10px; border-radius: 15px;
+        border-top-color: #882bf3;border-bottom-color: #f328c0;
+        border-left-color: #882bf3;border-right-color:#f328c0 ;
+        color: white;background:linear-gradient(to bottom right, #2bf3a0, #2879f3) ;}
+
+    .hidden { display: none; }
+
+    .toggle-link { color: blue; cursor: pointer; margin-top: 10px; text-align: center; }
+
+    .overlay {position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(255, 255, 255, 0.6); /* semi-transparent white */
+        backdrop-filter: blur(4px); /* blur effect */ display: flex;
+        justify-content: center; align-items: center; z-index: 9999;}
+
+    .triangle-spinner {width: 0; height: 0; border-left: 20px solid transparent;
+        border-right: 20px solid transparent; border-bottom: 35px solid #3498db;
+        animation: spinTriangle 1s linear infinite;}
+
+    @keyframes spinTriangle {0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }}
+
+    h2{text-align: center;
+    background:linear-gradient(to bottom right, #2bf3a0, #2879f3);border-radius: 15px;}
+  </style>
+</head>
+<body>
+  <div class="form-container" id="login-form">
+    <h2>WELCOME TO EPI INVESTMENTS</h2>
+    <h3>Login</h3>
+    <input type="text" id="login-username" placeholder="Username" />
+    <input type="password" id="login-password" placeholder="Password" />
+    <label><input type="checkbox" id="login-terms" /> I Agree to Terms and Conditions.<a href="Terms.html"><i>Read</i></a></label>
+    <button onclick="login()"><b>Login</b></button><br>
+    <a href="Password.html"><i>Forgot Password? Retrieve it here</i></a><br>
+    <p class="toggle-link" onclick="toggleForms()">First Time Login? Sign Up</p>
+  </div>
+
+  <div class="form-container hidden" id="signup-form">
+    <h2>Kindly Register Here👇</h2>
+    <h3>Sign Up</h3>
+    <input type="text" id="first-name" placeholder="First Name  * " />
+    <input type="text" id="middle-name" placeholder="Middle Name  * " />
+    <input type="text" id="last-name" placeholder="Last Name * " />
+    <input type="text" id="signup-username" placeholder="Username * " />
+    <input type="text" id="phone-number" placeholder="Phone Number * " />
+    <input type="password" id="signup-password" placeholder="Password (min 8 characters) * " />
+    <input type="password" id="confirm-password" placeholder="Confirm Password * " />
+    <label><input type="checkbox" id="signup-terms"/>* I Agree to Terms and Conditions.<a href="Terms.html"><i>Read</i></a></label>
+    <button onclick="signUp()"><b>Complete Sign Up</b></button>
+    <p class="toggle-link" onclick="toggleForms()">Already have an account? Login</p>
+  </div>
+
+    <!-- Overlay + Spinner -->
+    <div id="loading-overlay" class="overlay" style="display: none;">
+    <div class="triangle-spinner"></div>
+    </div>
+
+    <!-- Supabase JS Library (must come FIRST before you use supabase) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Supabase Initialization -->
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const supabaseUrl = "https://drivactdliyzcshlousw.supabase.co";
+        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRyaXZhY3RkbGl5emNzaGxvdXN3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1NTY4ODUsImV4cCI6MjA2MjEzMjg4NX0.7NYTI6cZIjsQoxCwBjj4ELbSEvEQqrR66fNB3PNNVDo";
+        window.supabase = supabase.createClient(supabaseUrl, supabaseKey);
+    });
+    </script>
+
+<script>
+    function showLoading(show) {
+        document.getElementById('loading-overlay').style.display = show ? 'flex' : 'none';
+    }
+
+     function toggleForms() {
+      document.getElementById('login-form').classList.toggle('hidden');
+      document.getElementById('signup-form').classList.toggle('hidden');
+    }
+
+    async function signUp() {
+        showLoading(true); // 🔁 Show spinner
+      const firstName = document.getElementById('first-name').value;
+      const middleName = document.getElementById('middle-name').value;
+      const lastName = document.getElementById('last-name').value;
+      const username = document.getElementById('signup-username').value;
+      const phone = document.getElementById('phone-number').value;
+      const password = document.getElementById('signup-password').value;
+      const confirm = document.getElementById('confirm-password').value;
+      const agreed = document.getElementById('signup-terms').checked;
+
+        if (!firstName || !lastName || !username || !phone || !password || !confirm) {
+            alert("Please fill all fields"); return showLoading(false);}
+        if (password !== confirm) { alert("Passwords do not match");return showLoading(false);}
+        if (password.length < 8) {alert("Password must be at least 8 characters"); return showLoading(false);}
+        if (!agreed) {alert("You must agree to the terms");return showLoading(false);}
+
+        showLoading(true); // Show loading spinner
+
+    // 🚨 Check if username already exists
+    const { data: existingUser, error: checkError } = await supabase
+        .from('users')
+        .select('id')
+        .eq('username', username)
+        .single();
+
+    if (existingUser) {showLoading(false);
+        return alert("Username is already taken. Please choose another.");}
+
+    if (checkError && checkError.code !== 'PGRST116') {showLoading(false);
+        return alert("An error occurred while checking username.");}
+
+      const { data, error } = await supabase.from('users').insert([{
+        first_name: firstName,
+        middle_name: middleName,
+        last_name: lastName,
+        username: username,
+        phone_number: phone,
+        password: password
+      }]);
+
+      showLoading(false); // 🔁 Hide spinner after operation
+
+      if (error) return alert("Error: " + error.message);alert("Sign up successful. Please log in.");
+
+      // Clear sign-up form fields
+        document.getElementById('first-name').value = '';
+        document.getElementById('middle-name').value = '';
+        document.getElementById('last-name').value = '';
+        document.getElementById('signup-username').value = '';
+        document.getElementById('phone-number').value = '';
+        document.getElementById('signup-password').value = '';
+        document.getElementById('confirm-password').value = '';
+        document.getElementById('signup-terms').checked = false;
+      toggleForms();
+    }
+    async function login() {
+  showLoading(true); // 🔁 Show spinner
+
+  const username = document.getElementById('login-username').value.trim();
+  const password = document.getElementById('login-password').value.trim();
+  const agreed = document.getElementById('login-terms').checked;
+
+  if (!username || !password) {
+    alert("Fill in both fields.");
+    return showLoading(false);
+  }
+
+  if (!agreed) {
+    alert("You must agree to the terms.");
+    return showLoading(false);
+  }
+
+  try {
+    // Fetch user from Supabase
+    const { data, error } = await supabase
+      .from('users')
+      .select('*')
+      .eq('username', username)
+      .eq('password', password)
+      .single();
+
+    showLoading(false); // Stop spinner
+
+    if (error || !data) {
+      return alert("Invalid login credentials.");
+    }
+
+    // ✅ Clear previous session
+    localStorage.clear();
+
+    // ✅ Store current user details for session
+    localStorage.setItem('epi_user_id', data.id);
+    localStorage.setItem('epi_username', data.username);
+    localStorage.setItem('epi_fullname', data.full_name || data.first_name || 'User');
+    localStorage.setItem('epi_phone', data.phone_number || '');
+
+    // ✅ Redirect to dashboard
+    window.location.href = 'dashboard.html';
+  } catch (err) {
+    console.error(err);
+    alert("An error occurred during login.");
+    showLoading(false);
+  }
+}
+
+  </script>
+</body>
+</html>

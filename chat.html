@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EPI Investments Dashboard</title>
+  <link rel="shortcut icon" type="image/x-icon" href="FAVICON LOGO.jpg">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    body {margin: 0; font-family: 'Segoe UI', sans-serif; background-color: #f4f6f8;}
+
+    #loader {position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.9);
+      display: flex; align-items: center; justify-content: center; z-index: 9999;}
+
+    .spinner {width: 50px; height: 50px; border: 6px solid #ddd; border-top: 6px solid #003366;
+      border-radius: 50%; animation: spin 1s linear infinite;}
+
+    @keyframes spin {0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); }}
+
+    .top-nav {background-color: #003366; color: white; display: flex; justify-content: space-between;
+      align-items: center; padding: 10px 30px; position: sticky; top: 0; z-index: 1000;}
+
+    .nav-left a {color: white; text-decoration: none; margin-right: 20px; font-weight: 500;}
+
+    .nav-left a:hover {text-decoration: underline;}
+
+    .nav-right {display: flex; align-items: center;}
+
+    .user-info {display: flex; align-items: center; gap: 20px;}
+
+    .user-details p {margin: 0; font-size: 13px; text-align: right;}
+
+    .user-profile {text-align: center;}
+
+    .user-icon {font-size: 30px; color: white; margin-top: 5px;}
+
+    .user-profile p {margin: 0; font-size: 14px; font-weight: bold;}
+
+    .user-profile button {margin-top: 5px; padding: 5px 10px; background: #ff4d4d; color: white; border: none;
+      border-radius: 5px; cursor: pointer;}
+
+    .user-profile button:hover {background: #e60000;}
+
+    main {padding: 20px; min-height: 70vh;}
+
+    footer {background: #003366; color: white; text-align: center; padding: 10px;}
+
+    .chat-container {max-width: 600px; margin: 40px auto; border: 1px solid #ccc; border-radius: 8px; display: flex;
+      flex-direction: column; height: 500px; overflow: hidden; background: #f9f9f9;}
+
+    .chat-header {background: #0a58ca; color: white; padding: 10px 20px; text-align: center;}
+
+    .chat-feed {flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;}
+
+    .chat-message {max-width: 75%; font-weight: bold; padding: 10px 15px; border-radius: 20px; line-height: 1.4; word-wrap: break-word;}
+
+    .chat-user {align-self: flex-end; background-color: #d1e7dd; color: #0f5132; border-bottom: 4px solid #0a58ca;
+      border-right: 4px solid #0a58ca;}
+
+    .chat-admin {align-self: flex-start; background-color: #e9ecef; color: #212529; border-left: 4px solid #0a58ca;
+      border-top: 4px solid #0a58ca;}
+
+    .chat-input-area {display: flex; padding: 10px; border-top: 1px solid #ccc; background: white;}
+
+    .chat-input-area input {flex: 1; padding: 10px; border-radius: 20px; border: 1px solid #ccc; margin-right: 10px;}
+
+    .chat-input-area button {padding: 10px 20px; border: none; background-color: #0a58ca; color: white;
+      border-radius: 20px; cursor: pointer;}
+  </style>
+</head>
+<body>
+  <!-- Loader -->
+  <div id="loader">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Top Navigation -->
+  <header class="top-nav">
+    <div class="nav-left">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="projects.html">Projects</a>
+      <a href="chat.html">Chat Us</a>
+      <a href="announcements.html">Announcements</a>
+      <a href="account.html">My Account</a>
+    </div>
+
+    <div class="nav-right">
+      <div class="user-info">
+        <div class="user-details">
+          <p id="username">Loading...</p>
+          <p id="userid">---</p>
+          <p id="phone">---</p>
+        </div>
+        <div class="user-profile">
+          <p id="hello-user">Hello, ...</p>
+          <i class="fas fa-user-circle user-icon"></i>
+          <button onclick="confirmLogout()">Log Out</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Page Content -->
+  <main>
+    <h2 style="text-align: center;">Welcome to your Chat Box</h2>
+    <p style="text-align: center;">Feel free to make any enquiries, complemets and complains through your chatbox</p>
+    <div class="chat-container">
+      <div class="chat-header"><h2>Support Chat</h2></div>
+      <div id="chat-feed" class="chat-feed"></div>
+      <div class="chat-input-area">
+        <input type="text" id="chat-input" placeholder="Type your message...">
+        <button onclick="sendMessage()">Send</button>
+      </div>
+    </div>
+    
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; EPI Company Limited 2025 &nbsp&nbsp&nbsp&nbsp&nbsp📞 Call Us: 0117 803 190 
+        &nbsp&nbsp&nbsp&nbsp&nbsp 💬 WhatsApp Us: +254117 803 190 &nbsp&nbsp&nbsp&nbsp&nbsp
+        📧Email us: epiinvestments.co.ke@gmail.com </p>
+  </footer>
+
+  <!-- Supabase + Script -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const supabaseUrl = 'https://drivactdliyzcshlousw.supabase.co';
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRyaXZhY3RkbGl5emNzaGxvdXN3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1NTY4ODUsImV4cCI6MjA2MjEzMjg4NX0.7NYTI6cZIjsQoxCwBjj4ELbSEvEQqrR66fNB3PNNVDo';
+  const client = supabase.createClient(supabaseUrl, supabaseKey); // ✅ Changed
+
+  const userId = localStorage.getItem("epi_user_id");
+
+  if (!userId) {
+    alert("You're not logged in.");
+    window.location.href = "login.html";
+  }
+
+  async function fetchUserDetails() {
+    try {
+      const { data, error } = await client
+        .from("users")
+        .select("username, phone_number, first_name")
+        .eq("id", userId)
+        .single();
+
+      if (error || !data) throw new Error("Failed to fetch user");
+
+      document.getElementById("username").textContent = data.username;
+      document.getElementById("userid").textContent = userId;
+      document.getElementById("phone").textContent = data.phone_number;
+      document.getElementById("hello-user").textContent = `Hello, ${data.first_name || data.username}`;
+    } catch (err) {
+      alert("Session error. Please log in again.");
+      localStorage.clear();
+      window.location.href = "login.html";
+    } finally {
+      document.getElementById("loader").style.display = "none";
+    }
+  }
+
+  function confirmLogout() {
+    const confirmOut = confirm("Are you sure you want to log out?");
+    if (confirmOut) {
+      localStorage.clear();
+      window.location.href = "login.html";
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", fetchUserDetails);
+
+  let currentChatIds = []; // track displayed message IDs
+
+  async function loadChatMessages() {
+    const userId = localStorage.getItem("epi_user_id");
+    const chatFeed = document.getElementById("chat-feed");
+
+    if (!chatFeed) {
+      console.error("❌ chat-feed element not found");
+      return;
+    }
+
+    const { data: messages, error } = await client
+      .from("chats")
+      .select("*")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: true });
+
+    if (error) {
+      console.error("❌ Failed to fetch messages:", error);
+      return;
+    }
+
+    // 🧠 If this is the first load and there are no messages
+    if ((!messages || messages.length === 0) && currentChatIds.length === 0) {
+      const fname = localStorage.getItem("epi_fullname") || "User";
+      chatFeed.innerHTML = ""; // Ensure clean slate
+      const greeting = document.createElement("div");
+      greeting.className = "chat-message chat-admin";
+      greeting.textContent = `Hi ${fname}, how can we help you today?`;
+      chatFeed.appendChild(greeting);
+      return;
+    }
+
+    // 🔄 Detect if there's a change (e.g., deleted or new messages)
+    const incomingIds = messages.map(msg => msg.id);
+    const isChanged = incomingIds.join(",") !== currentChatIds.join(",");
+
+    if (!isChanged) return; // ✅ No change, do nothing
+
+    // ✅ Change detected — refresh the chat feed
+    chatFeed.innerHTML = "";
+    currentChatIds = incomingIds; // update tracker
+
+    messages.forEach(msg => {
+      const bubble = document.createElement("div");
+      bubble.className = `chat-message ${msg.sender === 'user' ? 'chat-user' : 'chat-admin'}`;
+      bubble.textContent = msg.message;
+      chatFeed.appendChild(bubble);
+    });
+
+    chatFeed.scrollTop = chatFeed.scrollHeight;
+  }
+
+  async function sendMessage() {
+    const input = document.getElementById("chat-input");
+    const message = input.value.trim();
+    const userId = localStorage.getItem("epi_user_id");
+
+    if (!message) return;
+
+    const { error } = await client.from("chats").insert([{
+      user_id: userId,
+      sender: 'user',
+      message
+    }]);
+
+    if (error) {
+      console.error("Failed to send message:", error);
+      return;
+    }
+
+    input.value = "";
+    loadChatMessages();
+  }
+
+  // Refresh every 30s
+  setInterval(loadChatMessages, 30000);
+
+  // Load on page open
+  loadChatMessages();
+</script>
+</body>
+</html>
