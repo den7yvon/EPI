@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EPI Investments Projects</title>
+  <link rel="shortcut icon" type="image/x-icon" href="FAVICON LOGO.jpg">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    body {margin: 0; font-family: 'Segoe UI', sans-serif; background-color: #f4f6f8;}
+
+    #loader {position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.9);
+      display: flex; align-items: center; justify-content: center; z-index: 9999;}
+
+    .spinner {width: 50px; height: 50px; border: 6px solid #ddd; border-top: 6px solid #003366; border-radius: 50%;
+      animation: spin 1s linear infinite;}
+
+    @keyframes spin {0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); }}
+
+    .top-nav {background-color: #003366; color: white; display: flex; justify-content: space-between;
+      align-items: center; padding: 10px 30px; position: sticky; top: 0; z-index: 1000;}
+
+    .nav-left a {color: white; text-decoration: none; margin-right: 20px; font-weight: 500;}
+
+    .nav-left a:hover {text-decoration: underline;}
+
+    .nav-right {display: flex; align-items: center;}
+
+    .user-info {display: flex; align-items: center; gap: 20px;}
+
+    .user-details p {margin: 0; font-size: 13px; text-align: right;}
+
+    .user-profile {text-align: center;}
+
+    .user-icon {font-size: 30px; color: white; margin-top: 5px;}
+
+    .user-profile p {margin: 0; font-size: 14px; font-weight: bold;}
+
+    .user-profile button {margin-top: 5px; padding: 5px 10px; background: #ff4d4d; color: white;
+      border: none; border-radius: 5px; cursor: pointer;}
+
+    .user-profile button:hover {background: #e60000;}
+
+    main {padding: 20px; min-height: 70vh;}
+
+    footer {background: #003366; color: white; text-align: center; padding: 10px;}
+
+    .page-title {text-align: center; margin-bottom: 30px; color: green;}
+
+    .projects-container {display: flex; flex-direction: column; gap: 25px; max-width: 900px; margin: 0 auto;}
+
+    .project-card {background-color: #d8d6d6; padding: 20px; border-radius: 14px;
+       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);}
+
+    .project-card h2 {text-align: center; margin-bottom: 15px; color: blue;}
+
+    .project-details {margin-bottom: 15px; color: #333;}
+
+    .project-details span {display: block; margin: 5px 0;}
+
+    .project-description {margin: 10px 0; font-style: italic;}
+
+    .project-status {font-weight: bold; color: #007b5e;}
+
+    .project-images {display: flex; justify-content: space-between; margin-top: 15px;}
+
+    .project-Images {display: flex; justify-content: center;  margin-top: 15px;}
+
+    .project-images img {width: 30%; border-radius: 10px; cursor: pointer; transition: 0.3s;}
+
+    .project-images img:hover {transform: scale(1.05);}
+
+    .invest-btn {display: block; margin: 20px auto 0; padding: 12px 20px; background-color: #007bff; border: none;
+      color: #fff; border-radius: 8px; cursor: pointer; font-size: 1rem; transition: 0.2s; font-weight: bold;}
+
+    .invest-btn:hover {background-color: #0056b3;}
+
+    .modal {display: none; position: fixed; z-index: 9999; padding-top: 60px; left: 0; top: 0; width: 100%; height: 100%;
+      overflow: auto; background-color: rgba(0,0,0,0.85);}
+
+    .modal-content {display: block; margin: auto; max-width: 80%; border-radius: 10px;}
+
+    .close {position: absolute; top: 20px; right: 30px; color: #fff; font-size: 35px;font-weight: bolder; cursor: pointer;}
+
+    #menu-toggle {background: none; border: none; font-size: 20px; color: white; cursor: pointer;}
+
+    #active-page {margin-left: 10px; font-weight: bold;}
+
+    #nav-menu {position: absolute; top: 100%; left: 0; background: white; color: black; list-style: none; padding: 0; 
+        margin: 0; width: 200px; border-radius: 4px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); z-index: 1000;}
+
+    #nav-menu li {border-bottom: 1px solid #ddd;}
+
+    #nav-menu li:last-child {border-bottom: none;}
+
+    #nav-menu li a {display: block; padding: 10px 15px; text-decoration: none; color: black;}
+
+    #nav-menu li a:hover {background: #f1f1f1;}
+
+    .hidden {display: none;}
+
+    #nav-menu li a::before {content: "➤ "; color: #555; margin-right: 5px;}
+
+    .user-info {position: relative; display: inline-block;}
+
+    .user-icon {font-size: 1.8rem; cursor: pointer; color: white;}
+
+    .user-details {position: absolute; right: 0; top: 120%; background-color: rgb(237, 237, 241);
+        border: 2px solid crimson; border-radius: 8px; padding: 10px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        min-width: 200px; z-index: 1000; display: flex; flex-direction: column; gap: 6px;}
+
+    .user-details p {margin: 0; font-weight: bold; font-size: 0.9rem; color: #4409e7;}
+
+    .user-details button {padding: 6px 10px; margin-top: 5px; background-color: crimson; color: white;
+        border: none; border-radius: 5px; cursor: pointer;}
+
+    .hidden {display: none;}
+  </style>
+</head>
+<body>
+
+  <!-- Loader -->
+  <div id="loader">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Top Navigation -->
+  <header class="top-nav">
+    <div class="nav-left">
+      <button id="menu-toggle">☰</button>
+      <span id="active-page">Dashboard</span>
+    
+      <ul id="nav-menu" class="hidden">
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="projects.html">Projects</a></li>
+        <li><a href="chat.html">Chat Us</a></li>
+        <li><a href="announcements.html">Announcements</a></li>
+        <li><a href="account.html">My Account</a></li>
+        <li><a href="Contacts.html">Contact Us</a></li>
+      </ul>
+    </div>
+
+    <div class="nav-right">
+      <div class="user-info">
+        <i class="fas fa-user-circle user-icon" id="toggle-user-info"></i>
+        
+        <div id="user-details-dropdown" class="user-details hidden">
+          <p id="hello-user">Hello, ...</p>
+          <p id="username">Loading...</p>
+          <p id="userid">---</p>
+          <p id="phone">---</p>
+          <button onclick="confirmLogout()">Log Out</button>
+        </div>
+      </div>
+    </div>  
+  </header>
+
+  <!-- Page Content -->
+  <main>
+    <h2 style="text-align: center;">Welcome to the Investment Projects Page</h2>
+    <p style="text-align: center;">Get to see the various ongoing projects that EPI Company Limited has invested in.</p>
+    <h2 class="page-title"><u>Ongoing Investment Projects</u></h2>
+    <div class="projects-container" id="projectsContainer"></div>
+  
+    <!-- Image Modal -->
+    <div id="imageModal" class="modal">
+      <span class="close">&times;</span>
+      <img class="modal-content" id="modalImg">
+      <div id="caption"></div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; EPI Company Limited 2025</p>
+  </footer>
+
+  <!-- Supabase + Script -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const supabaseUrl = 'https://drivactdliyzcshlousw.supabase.co';
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRyaXZhY3RkbGl5emNzaGxvdXN3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1NTY4ODUsImV4cCI6MjA2MjEzMjg4NX0.7NYTI6cZIjsQoxCwBjj4ELbSEvEQqrR66fNB3PNNVDo';
+  const client = supabase.createClient(supabaseUrl, supabaseKey); // ✅ Changed
+
+  const userId = localStorage.getItem("epi_user_id");
+
+  if (!userId) {
+    alert("You're not logged in.");
+    window.location.href = "login.html";
+  }
+// Toggle menu visibility
+document.getElementById("menu-toggle").addEventListener("click", () => {
+    document.getElementById("nav-menu").classList.toggle("hidden");
+  });
+
+  // Highlight active page name
+  window.addEventListener("DOMContentLoaded", () => {
+    const currentPage = window.location.pathname.split("/").pop(); // e.g., 'chat.html'
+    const menuItems = document.querySelectorAll("#nav-menu a");
+    let pageName = "Dashboard"; // default
+
+    menuItems.forEach(link => {
+      const href = link.getAttribute("href");
+      if (href === currentPage) {
+        pageName = link.textContent;
+      }
+    });
+
+    document.getElementById("active-page").textContent = pageName;
+  });
+
+  document.addEventListener("DOMContentLoaded", () => {
+        const toggleBtn = document.getElementById("toggle-user-info");
+        const dropdown = document.getElementById("user-details-dropdown");
+
+        toggleBtn.addEventListener("click", () => {
+            dropdown.classList.toggle("hidden");
+        });
+
+        // Optional: Close dropdown if clicked outside
+        document.addEventListener("click", function (e) {
+            if (!toggleBtn.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.classList.add("hidden");
+            }
+        });
+    });
+    
+  async function fetchUserDetails() {
+    try {
+      const { data, error } = await client
+        .from("users")
+        .select("username, phone_number, first_name")
+        .eq("id", userId)
+        .single();
+
+      if (error || !data) throw new Error("Failed to fetch user");
+
+      document.getElementById("username").textContent = data.username;
+      document.getElementById("userid").textContent = userId;
+      document.getElementById("phone").textContent = data.phone_number;
+      document.getElementById("hello-user").textContent = `Hello, ${data.first_name || data.username}`;
+    } catch (err) {
+      alert("Session error. Please log in again.");
+      localStorage.clear();
+      window.location.href = "login.html";
+    } finally {
+      document.getElementById("loader").style.display = "none";
+    }
+  }
+
+  function confirmLogout() {
+    const confirmOut = confirm("Are you sure you want to log out?");
+    if (confirmOut) {
+      localStorage.clear();
+      window.location.href = "login.html";
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", fetchUserDetails);
+
+  const projects = [
+  {
+    name: "1. Green Valley Apartments",
+    target: 300000000,
+    raised: 100525100,
+    description: "A housing estate project to be located in the serene outskirts of Murang'a.",
+    status: "Open",
+    Images:"Below are some Prosepcted Designs",
+    images: ["project1.1.jpeg", "project1.2.jpeg", "project1.3.jpg"]
+  },
+  {
+    name: "2. Buy and Sell House Business",
+    target: 150000000,
+    raised: 207800,
+    description: "An initiative to Purchase and Resell Housing Mansionettes.",
+    status: "Open",
+    Images:"Below are some Prosepcted House Designs",
+    images: ["project2.1.jpg", "project2.2.jpg", "project2.3.jpeg"]
+  },
+  {
+    name: "3. EPI Mall",
+    target: 1000000000,
+    raised: 70000000,
+    description: "A commercial complex to be located in Makutano, Kirinyaga County targeting small vendors.",
+    status: "Open",
+    Images:"Below are the exterior designs in target",
+    images: ["project3.1.jpg", "project3.2.jpg", "project3.3.jpg"]
+  },
+  {
+    name: "4. Layers large scale farming project",
+    target: 12000000,
+    raised: 850000,
+    description: "An large scale layers project to be located in Muthanga Farm, Machakos County.",
+    status: "Open",
+    Images:"Below are the prospected outcomes",
+    images: ["project4.1.jpg", "project4.2.jpg", "project4.3.jpg"]
+  },
+ ];
+
+function formatAmount(amount) {
+  return "Ksh. " + amount.toLocaleString();
+}
+
+const container = document.getElementById("projectsContainer");
+
+projects.forEach(project => {
+  const card = document.createElement("div");
+  card.className = "project-card";
+  const remaining = project.target - project.raised;
+
+  card.innerHTML = `
+    <h2>${project.name}</h2>
+    <div class="project-details">
+      <span><strong>Target:</strong> ${formatAmount(project.target)}</span>
+      <span><strong>Raised:</strong> ${formatAmount(project.raised)}</span>
+      <span><strong>Remaining:</strong> ${formatAmount(remaining)}</span>
+      <div class="project-description"><strong>Description:</strong> ${project.description}</div>
+      <div class="project-status"><strong>Status:</strong> ${project.status}</div>
+      <div class="project-Images"><strong></strong> ${project.Images}</div>
+    </div>
+    <div class="project-images">
+      ${project.images.map((img, i) => `<img src="${img}" alt="Project Image ${i+1}" onclick="openModal('${img}')">`).join('')}
+    </div>
+    <button class="invest-btn" onclick="location.href='dashboard.html'">Invest in this Project</button>
+  `;
+
+  container.appendChild(card);
+});
+
+// Modal Logic
+const modal = document.getElementById("imageModal");
+const modalImg = document.getElementById("modalImg");
+const caption = document.getElementById("caption");
+const span = document.getElementsByClassName("close")[0];
+
+function openModal(imgSrc) {
+  modal.style.display = "block";
+  modalImg.src = imgSrc;
+  caption.innerText = "";
+}
+
+span.onclick = function() {
+  modal.style.display = "none";
+}
+
+window.onclick = function(e) {
+  if (e.target == modal) {
+    modal.style.display = "none";
+  }
+}
+
+</script>
+
+</body>
+</html>

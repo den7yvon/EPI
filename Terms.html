@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EPI Terms and Conditions</title>
+  <link rel="icon" href="FAVICON LOGO.jpg" type="image/x-icon" />
+
+  <style>
+    body {margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #1e3c72, #2a5298); height: 100vh;
+      display: flex; justify-content: center; align-items: center; overflow: hidden;}
+
+    .terms-container {background-color: #ffffffcc; padding: 30px; border-radius: 16px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.3); width: 90%; max-width: 500px;
+      position: relative; z-index: 2; max-height: 400px; overflow-y: auto;}
+
+    .terms-container h2 {text-align: center; margin-bottom: 20px; color: #1e3c72;}
+
+    .terms-container p {font-size: 14px; color: #333; line-height: 1.6;}
+
+    .back-button {display: block; width: 100%; margin-top: 25px; padding: 10px;
+      font-size: 16px; background-color: #1e3c72; color: white;
+      border: none; border-radius: 8px; cursor: pointer;}
+
+    #loader-overlay {position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background-color: rgba(255, 255, 255, 0.7); z-index: 999; display: flex;
+      justify-content: center; align-items: center;}
+
+    .triangle-loader {width: 0; height: 0; border-left: 30px solid transparent;
+      border-right: 30px solid transparent; border-bottom: 50px solid #1e3c72;
+      animation: spin 1s linear infinite;}
+
+    @keyframes spin {0% { transform: rotate(0deg); } 100% { transform: rotate(360deg);}}
+
+    @media (max-width: 600px) {.terms-container {width: 90%; padding: 20px; }
+      .terms-container p {font-size: 13px;}}
+  </style>
+</head>
+<body>
+  <!-- 🔄 Loader -->
+  <div id="loader-overlay">
+    <div class="triangle-loader"></div>
+  </div>
+
+  <!-- 📃 Terms Box -->
+  <div class="terms-container">
+    <h2>Terms and Conditions</h2>
+    <p>
+      Welcome to our platform. By using this site, you agree to the following:
+    </p>
+    <p>
+        1. You will be in a monetary agreement with the EPI INVESTMENTS COMPANY LIMITED.<br>
+        2. You will have agreed to comply with the Terms and Conditions of 
+            EPI INVESTMENTS COMPANY LIMITED voluntarily without having being forced in whatsoever means,
+            physically or mentally.<br>
+        3. You will entrust us with your principal investments accordingly and willingly.<br>
+        4. You reserve the right to question the company about the use of your principal
+            investments at any time and be updated accordingly(Through this official Site only). 
+            Should you not be updated within 72 working hours, you reserve the right to take down your
+            investment and your account at any time with or without our consent.<br>
+        5. PRINCIPAL & EARNINGS: The earnings gained from your principal investment will be calculated 
+            at a percentage reflected in all investment plans and is a subject to change. Your
+            principal investment will be withdrawable only after <b>3 months</b> of operation under the company.
+            However, You will be able to withdraw your daily earnings at anytime without restrictions. Your withdrawals will be 
+            processed and chanelled to your cashout registered platforms within 24 working hours.<br>
+        6. You are responsible for the accuracy of your account information (<i>Personal Details Entered</i>).<br />
+        7. DO NOT share your login credentials with others.<br />
+        8. We reserve the right to update these terms at any time.<br />
+        9. Any misuse of data may result in account suspension.<br />
+        10. Users agree to comply with all local and international laws.<br>
+        11. Failure to comply with these terms may result to account Termination without prior consent from the user. <br>
+        12. You are responsible of keeping your account active to avoid domarncy which may result to contract termination.<br>
+        13. You are allowed to communicate your views, complains, complements and suggestions through the company site or Contact centre.
+    </p>
+
+    <!-- 🔙 Back Button -->
+    <button class="back-button" onclick="goBack()">Back</button>
+  </div>
+
+  <!-- 🧠 JavaScript -->
+  <script>
+    function goBack() {
+      window.history.back(); // Go to the previous page
+    }
+
+    // ⏳ Simulate page loading
+    window.addEventListener('load', function () {
+      const loader = document.getElementById('loader-overlay');
+      loader.style.display = 'none';
+    });
+  </script>
+</body>
+</html>
