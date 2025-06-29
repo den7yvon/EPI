@@ -66,7 +66,7 @@
 
     .investment-inline {display: flex; justify-content: space-between;}
 
-    .section-heading {margin-top: 40px; text-align: center; font-size: 1.0em; color: Black;
+    .section-heading {margin-top: 40px; text-align: center; font-size: 1.3em; color: Black;
         border-radius: 10px; background: linear-gradient(135deg, rgb(10, 248, 248), lime);}
 
     .plans-container {display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; padding: 20px 10px;}
@@ -406,7 +406,7 @@
             card.innerHTML = `
                 <h4><u>Investment ${investments.indexOf(investment) + 1}</u></h4>
                 <div><strong>Principal:</strong> <b style="color: blue"> Ksh ${investment.principal}</b></div>
-                <div><strong>Rate:</strong><b style="color: blue"> ${investment.compounding_rate}% </b> 
+                <div><strong>Rate:</strong><b style="color: blue"> ${investment.compounding_rate}% </b> &nbsp&nbsp&nbsp&nbsp
                     <strong>Daily:</strong> <b style="color: blue"> Ksh ${investment.daily_earning}</b></div>
                 <div><strong>Earnings Balance:</strong> <b style="color: red"> Ksh ${investment.earnings_balance}</b></div>
                 <div><strong>Total Earnings:</strong> <b style="color: maroon">  Ksh ${investment.total_earnings}</b></div>                
