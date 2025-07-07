@@ -562,8 +562,10 @@
         document.getElementById("small-packages").innerHTML = "<h3>Small Packages</h3>";
         document.getElementById("middle-packages").innerHTML = "<h3>Middle Packages</h3>";
         document.getElementById("highend-packages").innerHTML = "<h3>High End Packages</h3>";
+          
+        const sortedPlans = data.sort((a, b) => parseFloat(a.principal) - parseFloat(b.principal));
 
-        data.forEach(plan => {
+        sortedPlans.forEach(plan => {
         const card = document.createElement("div");
         card.className = "plan-card";
         card.innerHTML = `
